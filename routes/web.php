@@ -1,6 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PaymentController;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Livewire;
+
+Livewire::component('admin.category-table', \App\Livewire\Admin\CategoryTable::class);
+Livewire::component('admin.book-table',     \App\Livewire\Admin\BookTable::class);
+Livewire::component('admin.order-table',    \App\Livewire\Admin\OrderTable::class);
+Livewire::component('admin.payment-table',  \App\Livewire\Admin\PaymentTable::class);
+Livewire::component('admin.user-table',     \App\Livewire\Admin\UserTable::class);
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,6 +25,42 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
         return view('dashboard');
-    })->name('dashboard');
+    })->middleware(['auth'])->name('dashboard');
+});
+
+
+Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard
+    Route::get('/', DashboardController::class)->name('dashboard');
+
+    // Kategori
+    Route::resource('categories', CategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    // Buku
+    Route::resource('books', BookController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+
+    // Orders — admin hanya bisa lihat & update status
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+    // Verifikasi pembayaran
+    Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::patch('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+    Route::patch('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+
+    //user
+    Route::get('users', function () {
+        return view('admin.users.index');
+    })->name('users.index');
 });
