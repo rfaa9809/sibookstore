@@ -25,23 +25,6 @@ Route::get('/about', AboutController::class)->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')->middleware('auth');
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        $user = Auth::user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return view('dashboard');
-    })->middleware(['auth'])->name('dashboard');
-});
-
-
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
     Route::get('/dashboard', function () {
@@ -53,6 +36,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 });
+
+
+
 
 Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
 
@@ -77,8 +63,7 @@ Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->na
     Route::patch('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
     Route::patch('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
 
-
     Route::get('users', function () {
-    return view('admin.users.index');
-})->name('users.index');
+        return view('admin.users.index');
+    })->name('users.index');
 });
