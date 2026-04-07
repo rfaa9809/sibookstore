@@ -53,7 +53,7 @@ class FortifyServiceProvider extends ServiceProvider
                 return route('admin.dashboard');
             }
 
-            return route('dashboard');
+            return route('home');
         });
     }
 }

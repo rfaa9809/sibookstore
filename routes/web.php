@@ -7,6 +7,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Book;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
 use Livewire\Livewire;
 
 Livewire::component('admin.category-table', \App\Livewire\Admin\CategoryTable::class);
@@ -15,9 +20,10 @@ Livewire::component('admin.order-table',    \App\Livewire\Admin\OrderTable::clas
 Livewire::component('admin.payment-table',  \App\Livewire\Admin\PaymentTable::class);
 Livewire::component('admin.user-table',     \App\Livewire\Admin\UserTable::class);
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class)->name('home');
+Route::get('/about', AboutController::class)->name('about');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')->middleware('auth');
 
 Route::middleware([
     'auth:sanctum',
@@ -35,6 +41,18 @@ Route::middleware([
     })->middleware(['auth'])->name('dashboard');
 });
 
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+
+    Route::get('/dashboard', function () {
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+});
 
 Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
 
@@ -59,8 +77,8 @@ Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->na
     Route::patch('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
     Route::patch('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
 
-    //user
+
     Route::get('users', function () {
-        return view('admin.users.index');
-    })->name('users.index');
+    return view('admin.users.index');
+})->name('users.index');
 });
