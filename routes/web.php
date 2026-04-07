@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
@@ -12,6 +12,9 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController as UserOrderController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\CheckoutController;
 use Livewire\Livewire;
 
 Livewire::component('admin.category-table', \App\Livewire\Admin\CategoryTable::class);
@@ -24,6 +27,7 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/about', AboutController::class)->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')->middleware('auth');
+Route::get('/books/{slug}', [BookController::class, 'show'])->name('books.show');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
@@ -35,6 +39,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     })->name('dashboard');
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
 
 

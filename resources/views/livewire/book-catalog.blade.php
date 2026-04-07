@@ -41,20 +41,24 @@
             </div>
         @else
             <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6">
-                @foreach ($books as $book)
-                    <div class="overflow-hidden transition bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md group">
+            @foreach ($books as $book)
+                <div class="flex flex-col overflow-hidden transition bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md group">
+
+                    {{-- LINK AREA --}}
+                    <a href="{{ route('books.show', $book->slug) }}" class="block">
+                        
                         {{-- Cover --}}
                         <div class="relative aspect-[2/3] bg-gray-50">
                             @if ($book->cover_image)
                                 <img src="{{ Storage::url($book->cover_image) }}"
                                     alt="{{ $book->title }}"
-                                    class="object-cover w-full h-full transition duration-300 group-hover:scale-105">
+                                    class="object-cover w-full h-full transition group-hover:scale-105">
                             @else
                                 <div class="flex items-center justify-center w-full h-full text-xs text-gray-300">
                                     No Cover
                                 </div>
                             @endif
-                            {{-- Badge kategori --}}
+
                             <span class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
                                 {{ $book->category->name }}
                             </span>
@@ -62,25 +66,27 @@
 
                         {{-- Info --}}
                         <div class="p-3 space-y-1">
-                            <p class="text-sm font-semibold leading-tight text-gray-800 line-clamp-2">
+                            <p class="text-sm font-semibold text-gray-800 line-clamp-2">
                                 {{ $book->title }}
                             </p>
                             <p class="text-xs text-gray-500">{{ $book->author }}</p>
                             <p class="text-sm font-bold text-blue-600">{{ $book->formattedPrice() }}</p>
 
-                            {{-- Stok --}}
                             <p class="text-xs {{ $book->stock > 5 ? 'text-green-600' : 'text-orange-500' }}">
                                 {{ $book->stock > 5 ? 'Stok tersedia' : "Sisa {$book->stock}" }}
                             </p>
                         </div>
 
-                        {{-- Add to Cart --}}
-                        <div class="px-3 pb-3">
-                            @livewire('add-to-cart', ['bookId' => $book->id], key($book->id))
-                        </div>
+                    </a>
+
+                    {{-- ADD TO CART (di DALAM card, tapi di luar link) --}}
+                    <div class="px-3 pb-3 mt-auto">
+                        @livewire('add-to-cart', ['bookId' => $book->id], key('cart-'.$book->id))
                     </div>
-                @endforeach
-            </div>
+
+                </div>
+            @endforeach
+        </div>
 
             {{-- Pagination --}}
             <div class="mt-8">
