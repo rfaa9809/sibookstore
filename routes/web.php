@@ -28,6 +28,10 @@ Route::get('/about', AboutController::class)->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send')->middleware('auth');
 Route::get('/books/{slug}', [BookController::class, 'show'])->name('books.show');
+Route::get('/test', function () {
+    return 'TEST OK';
+});
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
@@ -41,7 +45,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}', [UserOrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
 });
 
 
@@ -57,7 +62,7 @@ Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->na
         ->only(['index', 'store', 'update', 'destroy']);
 
     // Buku
-    Route::resource('books', BookController::class)
+    Route::resource('books', AdminBookController::class)
         ->only(['index', 'store', 'update', 'destroy']);
 
     // Orders — admin hanya bisa lihat & update status

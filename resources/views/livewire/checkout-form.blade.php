@@ -109,25 +109,33 @@
 
                 <div class="space-y-3">
                     @foreach ([
-                        'transfer'        => ['label' => 'Transfer Bank',     'desc' => 'BCA, BRI, BNI, Mandiri. Transfer manual ke rekening kami.', 'icon' => '🏦'],
-                        'virtual_account' => ['label' => 'Virtual Account',   'desc' => 'Bayar via kode VA yang akan dikirim ke email kamu.',         'icon' => '💳'],
-                        'cod'             => ['label' => 'Cash on Delivery',  'desc' => 'Bayar tunai saat buku tiba di tanganmu.',                    'icon' => '💵'],
+                        'transfer'        => ['label' => 'Transfer Bank',     'desc' => 'BCA, BRI, BNI, Mandiri.', 'icon' => '🏦'],
+                        'virtual_account' => ['label' => 'Virtual Account',   'desc' => 'Bayar via kode VA.',       'icon' => '💳'],
+                        'cod'             => ['label' => 'Cash on Delivery',  'desc' => 'Bayar saat barang tiba.',  'icon' => '💵'],
                     ] as $value => $opt)
-                        <label class="flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition
-                            {{ $paymentMethod === $value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300' }}">
-                            <input wire:model="paymentMethod" type="radio" value="{{ $value }}" class="sr-only">
+
+                        <div 
+                            wire:click="$set('paymentMethod', '{{ $value }}')" 
+                            class="flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition
+                            {{ $paymentMethod === $value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300' }}"
+                        >
+                            <input type="radio" value="{{ $value }}" class="hidden">
+
                             <span class="text-2xl">{{ $opt['icon'] }}</span>
+
                             <div class="flex-1">
                                 <p class="text-sm font-semibold text-gray-800">{{ $opt['label'] }}</p>
                                 <p class="text-xs text-gray-500 mt-0.5">{{ $opt['desc'] }}</p>
                             </div>
-                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0
+
+                            <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center
                                 {{ $paymentMethod === $value ? 'border-blue-600' : 'border-gray-300' }}">
                                 @if ($paymentMethod === $value)
                                     <div class="w-2.5 h-2.5 rounded-full bg-blue-600"></div>
                                 @endif
                             </div>
-                        </label>
+                        </div>
+
                     @endforeach
                 </div>
                 @error('paymentMethod') <p class="text-xs text-red-500">{{ $message }}</p> @enderror

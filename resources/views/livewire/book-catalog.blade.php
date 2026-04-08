@@ -72,9 +72,9 @@
                             <p class="text-xs text-gray-500">{{ $book->author }}</p>
                             <p class="text-sm font-bold text-blue-600">{{ $book->formattedPrice() }}</p>
 
-                            <p class="text-xs {{ $book->stock > 5 ? 'text-green-600' : 'text-orange-500' }}">
-                                {{ $book->stock > 5 ? 'Stok tersedia' : "Sisa {$book->stock}" }}
-                            </p>
+                            <p class="text-xs {{ $book->stock == 0 ? 'text-red-500' : 'text-green-600' }}">
+                                {{ $book->stock == 0 ? 'Stok habis' : ($book->stock <= 5 ? 'Stok tersedia' : 'Sisa ' . $book->stock) }}
+                            </p>    
                         </div>
 
                     </a>

@@ -50,7 +50,7 @@
                 <div class="flex items-center gap-4">
                     <p class="text-3xl font-bold text-blue-600">{{ $book->formattedPrice() }}</p>
                     <span class="text-sm {{ $book->stock > 5 ? 'text-green-600 bg-green-50' : ($book->stock > 0 ? 'text-orange-500 bg-orange-50' : 'text-red-500 bg-red-50') }} px-3 py-1 rounded-full font-medium">
-                        {{ $book->stock > 5 ? 'Stok Tersedia' : ($book->stock > 0 ? "Sisa {$book->stock}" : 'Stok Habis') }}
+                        {{ $book->stock <= 5 ? 'Stok Tersedia' : ($book->stock > 0 ? "Sisa {$book->stock}" : 'Stok Habis') }}
                     </span>
                 </div>
 

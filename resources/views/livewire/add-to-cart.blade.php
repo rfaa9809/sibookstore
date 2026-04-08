@@ -16,7 +16,7 @@
             </button>
         </div>
     @else
-        <button wire:click="addToCart"
+        <button wire:click.prevent="addToCart"
             wire:loading.attr="disabled"
             class="w-full py-2 text-xs font-medium text-white transition bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60">
             <span wire:loading.remove wire:target="addToCart">Tambah ke Cart</span>

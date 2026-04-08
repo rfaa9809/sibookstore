@@ -7,6 +7,7 @@ use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\DB;
 
 class OrderDetail extends Component
 {
@@ -46,6 +47,30 @@ class OrderDetail extends Component
         $this->paymentProof   = null;
 
         session()->flash('success', 'Bukti pembayaran berhasil diunggah! Admin akan memverifikasi segera.');
+    }
+
+    public function cancelOrder()
+    {
+        if ($this->order->status !== 'pending') {
+            return;
+        }
+
+        DB::transaction(function () {
+            
+            foreach ($this->order->orderItems as $item) {
+                $item->book->increment('stock', $item->quantity);
+            }
+
+            
+            $this->order->update([
+                'status' => 'cancelled'
+            ]);
+        });
+
+        // refresh UI
+        $this->order->refresh();
+
+        session()->flash('message', 'Pesanan berhasil dibatalkan.');
     }
 
     public function render()

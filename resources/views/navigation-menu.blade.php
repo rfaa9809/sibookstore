@@ -21,8 +21,8 @@
                         {{ __('Kontak') }}
                     </x-nav-link>
                     @auth
-                        <x-nav-link href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">
-                            {{ __('Cart.index') }}
+                        <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
+                            {{ __('Order') }}
                         </x-nav-link>
                         @if (Auth::user()->isAdmin())
                             <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.*')">

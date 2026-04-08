@@ -37,10 +37,19 @@ class AddToCart extends Component
             return;
         }
 
-        CartItem::updateOrCreate(
-            ['user_id' => Auth::id(), 'book_id' => $this->bookId],
-            ['quantity' => DB::raw("quantity + {$this->quantity}")]
-        );
+        $item = CartItem::where('user_id', Auth::id())
+            ->where('book_id', $this->bookId)
+            ->first();
+
+        if ($item) {
+            $item->update(['quantity' => DB::raw("quantity + {$this->quantity}")]);
+        } else {
+            CartItem::create([
+                'user_id' => Auth::id(),
+                'book_id' => $this->bookId,
+                'quantity' => $this->quantity
+            ]);
+        }
 
         $this->inCart       = true;
         $this->showFeedback = true;
