@@ -15,6 +15,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController as UserOrderController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use Livewire\Livewire;
 
 Livewire::component('admin.category-table', \App\Livewire\Admin\CategoryTable::class);
@@ -74,6 +75,11 @@ Route::middleware(['auth:sanctum', 'verified', 'is_admin'])->prefix('admin')->na
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::patch('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
     Route::patch('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+
+    Route::get('messages', [ContactMessageController::class, 'index'])->name('messages.index');
+    Route::patch('messages/{message}/read', [ContactMessageController::class, 'markAsRead'])->name('messages.read');
+    Route::delete('messages/{message}', [ContactMessageController::class, 'destroy'])
+    ->name('messages.destroy');
 
     Route::get('users', function () {
         return view('admin.users.index');
