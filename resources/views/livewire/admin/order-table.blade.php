@@ -1,16 +1,17 @@
+
 {{-- resources/views/livewire/admin/order-table.blade.php --}}
 <div>
 
-    <div class="bg-white rounded-xl shadow-sm border">
+    <div class="bg-white border shadow-sm rounded-xl">
 
         {{-- Header --}}
-        <div class="p-5 border-b flex justify-between">
+        <div class="flex justify-between p-5 border-b">
             <input wire:model.live.debounce.300ms="search"
                    placeholder="Cari order..."
-                   class="text-sm border rounded-lg px-3 py-2">
+                   class="px-3 py-2 text-sm border rounded-lg">
 
             <select wire:model.live="status"
-                    class="text-sm border rounded-lg px-3 py-2">
+                    class="px-3 py-2 text-sm border rounded-lg">
                 <option value="">Semua Status</option>
                 <option value="pending">Pending</option>
                 <option value="verified">Verified</option>
@@ -21,10 +22,11 @@
 
         {{-- Table --}}
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+            <thead class="text-xs text-gray-500 uppercase bg-gray-50">
                 <tr>
                     <th class="px-5 py-3 text-left">Order</th>
                     <th class="px-5 py-3 text-left">User</th>
+                    <th class="px-5 py-3 text-left">Buku</th>
                     <th class="px-5 py-3 text-center">Status</th>
                     <th class="px-5 py-3 text-right">Total</th>
                 </tr>
@@ -39,6 +41,13 @@
 
                         <td class="px-5 py-3">
                             {{ $order->user->name }}
+                        </td>
+
+                        <td class="px-5 py-3">
+                            <img src="{{ optional($order->orderItems->first()?->book?->cover_image) ? Storage::url($order->orderItems->first()->book->cover_image) : asset('images/no-cover.png') }}"
+                            alt="Cover"
+                            class="object-cover w-12 h-16 rounded">
+                            <p class="py-2 text-xs text-gray-500 ">{{ $order->orderItems->first()?->book?->title }}</p>
                         </td>
 
                         <td class="px-5 py-3 text-center">
@@ -56,7 +65,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center py-6 text-gray-400">
+                        <td colspan="4" class="py-6 text-center text-gray-400">
                             Tidak ada order
                         </td>
                     </tr>

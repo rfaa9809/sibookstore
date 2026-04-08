@@ -12,10 +12,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    // -------------------------------------------------------
-    // Status Constants
-    // -------------------------------------------------------
-
     const STATUS_PENDING   = 'pending';
     const STATUS_PAID      = 'paid';
     const STATUS_VERIFIED  = 'verified';
@@ -41,10 +37,6 @@ class Order extends Model
         ];
     }
 
-    // -------------------------------------------------------
-    // Auto-generate order number saat order dibuat
-    // Format: ORD-YYYYMMDD-XXXX (contoh: ORD-20240601-0042)
-    // -------------------------------------------------------
 
     protected static function booted(): void
     {
@@ -57,9 +49,10 @@ class Order extends Model
         });
     }
 
-    // -------------------------------------------------------
-    // Status Helpers
-    // -------------------------------------------------------
+    public function formattedTotal(): string
+    {
+        return 'Rp ' . number_format($this->total_amount, 0, ',', '.');
+    }
 
     public function isPending(): bool
     {
@@ -91,9 +84,6 @@ class Order extends Model
         return $this->status === self::STATUS_CANCELLED;
     }
 
-    /**
-     * Label status dalam Bahasa Indonesia untuk ditampilkan di UI.
-     */
     public function statusLabel(): string
     {
         return match ($this->status) {
@@ -107,9 +97,7 @@ class Order extends Model
         };
     }
 
-    /**
-     * Badge color untuk UI (Tailwind CSS class).
-     */
+    
     public function statusColor(): string
     {
         return match ($this->status) {
@@ -123,9 +111,6 @@ class Order extends Model
         };
     }
 
-    // -------------------------------------------------------
-    // Relationships
-    // -------------------------------------------------------
 
     public function user(): BelongsTo
     {
