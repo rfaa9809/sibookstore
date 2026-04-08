@@ -21,12 +21,13 @@
                         {{ __('Kontak') }}
                     </x-nav-link>
                     @auth
-                        <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
-                            {{ __('Order') }}
-                        </x-nav-link>
                         @if (Auth::user()->isAdmin())
                             <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.*')">
                                 {{ __('Admin Panel') }}
+                            </x-nav-link>
+                        @else
+                            <x-nav-link href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">
+                                {{ __('Order') }}
                             </x-nav-link>
                         @endif
                     @endauth

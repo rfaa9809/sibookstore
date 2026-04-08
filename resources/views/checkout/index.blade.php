@@ -1,4 +1,4 @@
-<x-layouts.app-layout>
+<x-app-layout>
     <div class="max-w-5xl px-4 py-10 mx-auto sm:px-6 lg:px-8">
 
         {{-- Header --}}
@@ -10,4 +10,4 @@
         @livewire('checkout-form')
 
     </div>
-</x-layouts.app-layout>
+</x-app-layout>
