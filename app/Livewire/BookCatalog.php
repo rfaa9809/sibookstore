@@ -32,7 +32,7 @@ class BookCatalog extends Component
             ->when($this->sortBy === 'latest',     fn ($q) => $q->latest())
             ->paginate(12);
 
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::withCount('books')->get();
 
         return view('livewire.book-catalog', compact('books', 'categories'));
     }

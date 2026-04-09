@@ -8,7 +8,7 @@
             class="flex-1 min-w-48 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 
         <select wire:model.live="category"
-            class="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            class="border border-gray-200 rounded-xl px-6 py-4.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Semua Kategori</option>
             @foreach ($categories as $cat)
                 <option value="{{ $cat->id }}">{{ $cat->name }} ({{ $cat->books_count ?? '' }})</option>
