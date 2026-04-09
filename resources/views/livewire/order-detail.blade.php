@@ -1,5 +1,9 @@
 {{-- resources/views/livewire/order-detail.blade.php --}}
 <div class="space-y-6">
+    @php
+        $isCOD = $order->payment && $order->payment->method === 'cod';
+    @endphp
+
 
     @if (session('success'))
         <div class="flex items-center gap-2 p-4 text-sm text-green-700 bg-green-50 rounded-xl">
@@ -22,25 +26,61 @@
                   ($order->status === 'verified'  ? 'bg-indigo-100 text-indigo-700' :
                   ($order->status === 'paid'      ? 'bg-blue-100 text-blue-700' :
                   'bg-yellow-100 text-yellow-700')))) }}">
-                {{ $order->statusLabel() }}
+                @if ($isCOD)
+                    @if ($order->status === 'shipped')
+                        Pesanan Dikirim (COD)
+                    @elseif ($order->status === 'completed')
+                        Selesai (COD)
+                    @else
+                        {{ $order->statusLabel() }}
+                    @endif
+                @else
+                    {{ $order->statusLabel() }}
+                @endif
             </span>
         </div>
 
         {{-- Progress bar status --}}
         @php
-            $steps = ['pending' => 1, 'paid' => 2, 'verified' => 3, 'shipped' => 4, 'completed' => 5];
+
+            if ($isCOD) {
+                $steps = [
+                    'shipped'   => 1,
+                    'completed' => 2,
+                ];
+
+                $labels = ['Dikirim', 'Selesai'];
+                $maxStep = 2;
+            } else {
+                $steps = [
+                    'pending'   => 1,
+                    'paid'      => 2,
+                    'verified'  => 3,
+                    'shipped'   => 4,
+                    'completed' => 5,
+                ];
+
+                $labels = ['Menunggu Bayar', 'Bukti Dikirim', 'Terverifikasi', 'Dikirim', 'Selesai'];
+                $maxStep = 5;
+            }
+
             $currentStep = $steps[$order->status] ?? 1;
         @endphp
+        
         @if ($order->status !== 'cancelled')
             <div class="mt-6">
                 <div class="flex items-center justify-between mb-2 text-xs text-gray-400">
-                    @foreach (['Menunggu Bayar', 'Bukti Dikirim', 'Terverifikasi', 'Dikirim', 'Selesai'] as $i => $label)
-                        <span class="{{ $currentStep >= $i + 1 ? 'text-blue-600 font-semibold' : '' }}">{{ $label }}</span>
+                    @foreach ($labels as $i => $label)
+                        <span class="{{ $currentStep >= $i + 1 ? 'text-blue-600 font-semibold' : '' }}">
+                            {{ $label }}
+                        </span>
                     @endforeach
                 </div>
+
                 <div class="h-2 overflow-hidden bg-gray-100 rounded-full">
                     <div class="h-full transition-all duration-500 bg-blue-600 rounded-full"
-                        style="width: {{ ($currentStep / 5) * 100 }}%"></div>
+                        style="width: {{ ($currentStep / $maxStep) * 100 }}%">
+                    </div>
                 </div>
             </div>
         @endif
@@ -73,13 +113,19 @@
                         <span class="text-gray-500">Total</span>
                         <span class="font-bold text-blue-600">{{ $order->payment->formattedAmount() }}</span>
                     </div>
+                    
                     <div class="flex justify-between">
                         <span class="text-gray-500">Status</span>
                         <span class="font-medium
                             {{ $order->payment->status === 'verified' ? 'text-green-600' :
                               ($order->payment->status === 'rejected' ? 'text-red-500' :
                               ($order->payment->status === 'uploaded' ? 'text-blue-600' : 'text-yellow-600')) }}">
-                            {{ $order->payment->statusLabel() }}
+                            @if ($order->payment->method === 'cod')
+                                <span class="italic text-gray-400">(Bayar di Tempat)</span>
+                            @else
+                                <span class="font-medium"> {{ $order->payment->statusLabel() }}</span>
+                                    
+                            @endif  
                         </span>
                     </div>
                 </div>
@@ -105,14 +151,15 @@
                 @endif
 
                 {{-- Upload bukti bayar --}}
-                @if (in_array($order->payment->status, ['pending', 'rejected']) && $order->status !== 'cancelled')
+                @if (in_array($order->payment->status, ['pending', 'rejected']) && $order->status !== 'cancelled' && $order->payment->method !== 'cod')
                     <div class="pt-4 mt-4 border-t border-gray-100">
                         @if (! $showUploadForm)
-                            <button wire:click="$set('showUploadForm', true)"
-                                class="w-full py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">
-                                {{ $order->payment->isRejected() ? 'Upload Ulang Bukti' : 'Upload Bukti Pembayaran' }}
-                            </button>
-
+                            @if(!in_array($order->payment->method, ['transfer', 'virtual_account']))
+                                <button wire:click="$set('showUploadForm', true)"
+                                    class="w-full py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">
+                                    {{ $order->payment->isRejected() ? 'Upload Ulang Bukti' : 'Upload Bukti Pembayaran' }}
+                                </button>
+                            @endif
                             {{-- Info rekening untuk transfer --}}
                             @if ($order->payment->method === 'transfer')
                                 <div class="p-3 mt-3 space-y-1 text-xs text-blue-700 bg-blue-50 rounded-xl">
@@ -129,18 +176,18 @@
                                 </div>
                             @endif
                         @else
-                            <div class="space-y-3">
-                                <p class="text-sm font-medium text-gray-700">Upload Bukti Pembayaran</p>
-                                <input wire:model="paymentProof" type="file" accept="image/*"
+                            {{-- <div class="space-y-3">
+                                {{-- p class="text-sm font-medium text-gray-700">Upload Bukti Pembayaran</p>< --}}
+                                {{-- <input wire:model="paymentProof" type="file" accept="image/*"
                                     class="w-full px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl">
                                 @error('paymentProof') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
 
                                 @if ($paymentProof)
                                     <img src="{{ $paymentProof->temporaryUrl() }}"
                                         class="object-cover w-full rounded-lg max-h-40" alt="Preview">
-                                @endif
+                                @endif --}}
 
-                                <div class="flex gap-2">
+                                {{-- <div class="flex gap-2">
                                     <button wire:click="$set('showUploadForm', false)"
                                         class="flex-1 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50">
                                         Batal
@@ -152,7 +199,7 @@
                                         <span wire:loading wire:target="uploadProof">Mengirim...</span>
                                     </button>
                                 </div>
-                            </div>
+                            </div> --}}
                         @endif
                     </div>
                 @endif

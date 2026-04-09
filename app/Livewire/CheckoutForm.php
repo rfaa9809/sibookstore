@@ -51,7 +51,7 @@ class CheckoutForm extends Component
             ->where('user_id', Auth::id())
             ->get();
 
-        $this->total = $this->cartItems->sum(fn ($item) => $item->subtotal());
+        $this->total = $this->cartItems->sum(fn($item) => $item->subtotal());
 
         // Pre-fill nama dari profil user
         $this->recipientName = Auth::user()->name;
@@ -118,9 +118,13 @@ class CheckoutForm extends Component
             ]));
 
             // Buat order
+            $status = $this->paymentMethod === 'cod'
+                ? Order::STATUS_SHIPPED
+                : Order::STATUS_PENDING;
+
             $order = Order::create([
                 'user_id'          => Auth::id(),
-                'status'           => Order::STATUS_PENDING,
+                'status'           => $status,
                 'total_amount'     => $this->total,
                 'shipping_address' => $shippingAddress,
                 'recipient_name'   => $this->recipientName,
@@ -142,12 +146,23 @@ class CheckoutForm extends Component
             }
 
             // Buat record payment
-            Payment::create([
-                'order_id' => $order->id,
-                'method'   => $this->paymentMethod,
-                'status'   => Payment::STATUS_PENDING,
-                'amount'   => $this->total,
-            ]);
+            if ($this->paymentMethod === 'cod') {
+                
+
+                Payment::create([
+                    'order_id' => $order->id,
+                    'method'   => 'cod',
+                    'status'   => Payment::STATUS_VERIFIED,
+                    'amount'   => $this->total,
+                ]);
+            } else {
+                Payment::create([
+                    'order_id' => $order->id,
+                    'method'   => $this->paymentMethod,
+                    'status'   => Payment::STATUS_PENDING,
+                    'amount'   => $this->total,
+                ]);
+            }
 
             // Kosongkan cart
             CartItem::where('user_id', Auth::id())->delete();

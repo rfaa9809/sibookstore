@@ -25,6 +25,7 @@
             <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                 <tr>
                     <th class="px-5 py-3 text-left">Nama</th>
+                    <th class="px-5 py-3 text-left">Deskripsi</th>
                     <th class="px-5 py-3 text-right">Aksi</th>
                 </tr>
             </thead>
@@ -33,6 +34,7 @@
                 @forelse ($categories as $cat)
                     <tr class="hover:bg-gray-50">
                         <td class="px-5 py-3">{{ $cat->name }}</td>
+                        <td class="px-5 py-3">{{ $cat->description }}</td>
                         <td class="px-5 py-3 text-right">
                             <button wire:click="openEdit({{ $cat->id }})"
                                     class="text-blue-600 text-xs">Edit</button>
@@ -66,9 +68,16 @@
                 </h3>
 
                 <input wire:model="name"
-                       class="w-full border rounded-lg px-3 py-2 text-sm">
+                       class="w-full border rounded-lg px-3 py-2 text-sm"
+                       placeholder="Nama kategori...">
 
                 @error('name') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+
+                <textarea wire:model="description"
+                          class="w-full border rounded-lg px-3 py-2 text-sm mt-2"
+                          placeholder="Deskripsi kategori..."></textarea>
+
+                @error('description') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
 
                 <div class="flex justify-end gap-3 mt-4">
                     <button wire:click="closeModal">Batal</button>

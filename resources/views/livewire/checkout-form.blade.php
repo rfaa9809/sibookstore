@@ -119,7 +119,7 @@
                             class="flex items-center gap-4 p-4 border rounded-xl cursor-pointer transition
                             {{ $paymentMethod === $value ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300' }}"
                         >
-                            <input type="radio" value="{{ $value }}" class="hidden">
+                            <input type="radio" wire:model="paymentMethod" value="{{ $value }}" class="hidden">
 
                             <span class="text-2xl">{{ $opt['icon'] }}</span>
 
