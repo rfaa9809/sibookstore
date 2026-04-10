@@ -110,8 +110,7 @@
                 <div class="space-y-3">
                     @foreach ([
                         'transfer'        => ['label' => 'Transfer Bank',     'desc' => 'BCA, BRI, BNI, Mandiri.', 'icon' => '🏦'],
-                        'virtual_account' => ['label' => 'Virtual Account',   'desc' => 'Bayar via kode VA.',       'icon' => '💳'],
-                        'cod'             => ['label' => 'Cash on Delivery',  'desc' => 'Bayar saat barang tiba.',  'icon' => '💵'],
+                        'virtual_account' => ['label' => 'Virtual Account',  'desc' => 'Kode unik untuk pembayaran otomatis.', 'icon' => '💳'],
                     ] as $value => $opt)
 
                         <div 
@@ -176,7 +175,7 @@
                         <button wire:click="$set('step', 2)" class="text-xs text-blue-600 hover:underline">Ubah</button>
                     </div>
                     <p class="text-sm text-gray-700">
-                        {{ ['transfer' => '🏦 Transfer Bank', 'virtual_account' => '💳 Virtual Account', 'cod' => '💵 Cash on Delivery'][$paymentMethod] ?? '-' }}
+                        {{ ['transfer' => '🏦 Transfer Bank', 'virtual_account' => '💳 Virtual Account'][$paymentMethod] ?? '-' }}
                     </p>
                 </div>
 

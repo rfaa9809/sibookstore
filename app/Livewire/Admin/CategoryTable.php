@@ -71,7 +71,7 @@ class CategoryTable extends Component
 
     public function delete(Category $category): void
     {
-        // Cek apakah masih ada buku dalam kategori ini
+        $category->loadCount('books');
         if ($category->books()->exists()) {
             session()->flash('error', 'Kategori tidak bisa dihapus karena masih memiliki buku.');
             return;

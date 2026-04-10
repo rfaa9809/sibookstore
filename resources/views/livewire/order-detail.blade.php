@@ -154,12 +154,12 @@
                 @if (in_array($order->payment->status, ['pending', 'rejected']) && $order->status !== 'cancelled' && $order->payment->method !== 'cod')
                     <div class="pt-4 mt-4 border-t border-gray-100">
                         @if (! $showUploadForm)
-                            @if(!in_array($order->payment->method, ['transfer', 'virtual_account']))
-                                <button wire:click="$set('showUploadForm', true)"
-                                    class="w-full py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">
-                                    {{ $order->payment->isRejected() ? 'Upload Ulang Bukti' : 'Upload Bukti Pembayaran' }}
-                                </button>
-                            @endif
+                            @if(in_array($order->payment->method, ['transfer', 'virtual_account']))
+    <button wire:click="$set('showUploadForm', true)"
+        class="w-full py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition">
+        {{ $order->payment->isRejected() ? 'Upload Ulang Bukti' : 'Upload Bukti Pembayaran' }}
+    </button>
+@endif
                             {{-- Info rekening untuk transfer --}}
                             @if ($order->payment->method === 'transfer')
                                 <div class="p-3 mt-3 space-y-1 text-xs text-blue-700 bg-blue-50 rounded-xl">
@@ -167,27 +167,21 @@
                                     <p>BCA · 1234567890 · a/n BookStore Indonesia</p>
                                     <p>BRI · 0987654321 · a/n BookStore Indonesia</p>
                                 </div>
-                            @elseif ($order->payment->method === 'virtual_account')
-                                <div class="p-3 mt-3 text-xs text-blue-700 bg-blue-50 rounded-xl">
-                                    <p class="font-semibold">Kode Virtual Account:</p>
-                                    <p class="mt-1 font-mono text-lg font-bold tracking-widest">
-                                        {{ str_pad($order->id, 10, '0', STR_PAD_LEFT) }}
-                                    </p>
-                                </div>
+                            
                             @endif
                         @else
-                            {{-- <div class="space-y-3">
-                                {{-- p class="text-sm font-medium text-gray-700">Upload Bukti Pembayaran</p>< --}}
-                                {{-- <input wire:model="paymentProof" type="file" accept="image/*"
+                            <div class="space-y-3">
+                                <p class="text-sm font-medium text-gray-700">Upload Bukti Pembayaran</p>
+                                <input wire:model="paymentProof" type="file" accept="image/*"
                                     class="w-full px-3 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl">
                                 @error('paymentProof') <p class="text-xs text-red-500">{{ $message }}</p> @enderror
 
                                 @if ($paymentProof)
                                     <img src="{{ $paymentProof->temporaryUrl() }}"
                                         class="object-cover w-full rounded-lg max-h-40" alt="Preview">
-                                @endif --}}
+                                @endif 
 
-                                {{-- <div class="flex gap-2">
+                                <div class="flex gap-2">
                                     <button wire:click="$set('showUploadForm', false)"
                                         class="flex-1 py-2 text-sm text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50">
                                         Batal
@@ -199,7 +193,7 @@
                                         <span wire:loading wire:target="uploadProof">Mengirim...</span>
                                     </button>
                                 </div>
-                            </div> --}}
+                            </div> 
                         @endif
                     </div>
                 @endif

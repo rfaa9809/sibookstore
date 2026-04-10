@@ -1,21 +1,21 @@
 <div>
 
     @if (session('success'))
-        <div class="mb-4 p-3 bg-green-50 text-green-700 rounded-lg text-sm">
+        <div class="p-3 mb-4 text-sm text-green-700 rounded-lg bg-green-50">
             {{ session('success') }}
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-sm border">
+    <div class="bg-white border shadow-sm rounded-xl">
 
         {{-- Toolbar --}}
-        <div class="p-5 flex justify-between">
+        <div class="flex justify-between p-5">
             <input wire:model.live.debounce.300ms="search"
                    placeholder="Cari user..."
-                   class="text-sm border rounded-lg px-3 py-2">
+                   class="px-3 py-2 text-sm border rounded-lg">
 
             <select wire:model.live="role"
-                    class="text-sm border rounded-lg px-3 py-2">
+                    class="px-3 py-2 text-sm border rounded-lg">
                 <option value="">Semua Role</option>
                 <option value="admin">Admin</option>
                 <option value="user">User</option>
@@ -24,7 +24,7 @@
 
         {{-- Table --}}
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+            <thead class="text-xs text-gray-500 uppercase bg-gray-50">
                 <tr>
                     <th class="px-5 py-3 text-left">Nama</th>
                     <th class="px-5 py-3 text-left">Email</th>
@@ -50,14 +50,15 @@
 
                         <td class="px-5 py-3 text-right">
                             <button wire:click="delete({{ $user->id }})"
-                                    class="text-red-500 text-xs">
+                                    wire:confirm="Yakin ingin menghapus User ini?"
+                                    class="text-xs text-red-500">
                                 Hapus
                             </button>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center py-6 text-gray-400">
+                        <td colspan="4" class="py-6 text-center text-gray-400">
                             Tidak ada user
                         </td>
                     </tr>
